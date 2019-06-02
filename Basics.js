@@ -10,7 +10,7 @@ let name = 'Shakir';
 console.log(name);
 */
 
-//var cant be reserver keyword ex: if, else etc
+//var cant be reserved keyword ex: if, else etc
 //cant contain space
 //var are case sensitive
 // can define them in one line or multiple line
@@ -43,10 +43,10 @@ let isApproved = false; //boolean
 let firstName = undefined; //undefined
 let Color = null; //null
 
-name = 20 // in console
-typeof name //in console
-typeof isApproved //in console
-typeof Color //in console, it will give output as object
+name = 20 // in console , it will overwrite the name and hence its datatype will get updated
+typeof name //in browser console
+typeof isApproved //in browser  console
+typeof Color //in browser console, it will give output as object
 
 */
 
