@@ -32,7 +32,7 @@ app.get('/users', (request, response) => {
 app.get('/users/:id', (request, response) => {
     const id = request.params.id;
  
-    pool.query('SELECT * FROM users WHERE id = ?', id, (error, result) => {
+    connection.query('SELECT * FROM users WHERE id = ?', id, (error, result) => {
         if (error) throw error;
  
         response.send(result);
@@ -44,7 +44,7 @@ app.get('/users/:id', (request, response) => {
 /*
 // Add a new user
 app.post('/users', (request, response) => {
-    pool.query('INSERT INTO users SET ?', request.body, (error, result) => {
+    connection.query('INSERT INTO users SET ?', request.body, (error, result) => {
         if (error) throw error;
  
         response.status(201).send(`User added with ID: ${result.insertId}`);
@@ -58,7 +58,7 @@ app.post('/users', (request, response) => {
 app.put('/users/:id', (request, response) => {
     const id = request.params.id;
  
-    pool.query('UPDATE users SET ? WHERE id = ?', [request.body, id], (error, result) => {
+    connection.query('UPDATE users SET ? WHERE id = ?', [request.body, id], (error, result) => {
         if (error) throw error;
  
         response.send('User updated successfully.');
@@ -71,7 +71,7 @@ app.put('/users/:id', (request, response) => {
 app.delete('/users/:id', (request, response) => {
     const id = request.params.id;
  
-    pool.query('DELETE FROM users WHERE id = ?', id, (error, result) => {
+    connection.query('DELETE FROM users WHERE id = ?', id, (error, result) => {
         if (error) throw error;
  
         response.send('User deleted.');
