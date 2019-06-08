@@ -3,6 +3,11 @@ var express = require('express');
 var app = express();
 var mysql      = require('mysql');
 var bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+
+app.use(methodOverride('_method'));
+
+
 
 //start mysql connection
 var connection = mysql.createConnection({
@@ -26,15 +31,9 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 //end body-parser configuration
 
 //create app server
-var server = app.listen(3000,  "127.0.0.1", function () {
+var server = app.listen(3000)
 
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log(" app listening at http://%s:%s", host, port)
-
-});
-
+/*
 //rest api to get all results
 app.get('/employee', function (req, res) {
    connection.query('select * from employee', function (error, results, fields) {
@@ -42,13 +41,22 @@ app.get('/employee', function (req, res) {
 	  res.end(JSON.stringify(results));
 	});
 });
-
+*/
 //rest api to get a single employee data
-app.get('/employee/:id', function (req, res) {
-    console.log(req);
-    connection.query('select * from employee where id=?', [req.params.id], function (error, results, fields) {
-       if (error) throw error;
-       res.end(JSON.stringify(results));
+app.get('/employee', function (req, res,) {
+    console.log(req.query);
+
+    connection.query('select * from employee where id=?', [req.query.id], function (error, results, fields) {
+      var  x= JSON.stringify(results);
+      if (x==='[]') {
+        res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' + '<h2>ERROR: No Such ID<h2>')
+      }
+       //res.end(JSON.stringify(results));
+       res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' +  JSON.stringify(results));
+
+  
+   
+
      });
  });
  
@@ -57,24 +65,40 @@ app.get('/employee/:id', function (req, res) {
 app.post('/employee', function (req, res) {
    var postData  = req.body;
    connection.query('INSERT INTO employee SET id=?,`name`=?,`salary`=?,`age`=?', [ req.body.id,req.body.name,req.body.salary, req.body.age], function (error, results, fields) {
-	  if (error) throw error;
-	  res.end(JSON.stringify(results));
-	});
+	  if (error) {
+      res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>'+'<h2>ERROR: ID ALREADY EXISTS</h2>')
+    }
+    res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' +  'Record ' + [req.body.id] +' has been Inserted!');
+  
+  });
 });
 
 //rest api to update record into mysql database
 app.put('/employee', function (req, res) {
    connection.query('UPDATE `employee` SET `name`=?,`salary`=?,`age`=? where `id`=?', [req.body.name,req.body.salary, req.body.age, req.body.id], function (error, results, fields) {
-	  if (error) throw error;
-	  res.end(JSON.stringify(results));
-	});
+ 
+    var  x= JSON.stringify(results);
+   
+    if (x==='{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":2,"warningCount":0,"message":"(Rows matched: 1  Changed: 1  Warnings: 0","protocol41":true,"changedRows":1}')
+    {
+    res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' +  'Record ' + [req.body.id] +' has been Updated!');
+    }
+    res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' +'<h2>ERROR: No Such Row</h2>')
+
+  });
 });
 
 //rest api to delete record from mysql database
 app.delete('/employee', function (req, res) {
    console.log(req.body);
    connection.query('DELETE FROM `employee` WHERE `id`=?', [req.body.id], function (error, results, fields) {
-	  if (error) throw error;
-	  res.end('Record has been deleted!');
-	});
+    var  x= JSON.stringify(results);
+    if (x==='{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":2,"warningCount":0,"message":"","protocol41":true,"changedRows":0}')
+  {
+   
+   res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1><p>'  + 'Record ' + [req.body.id] +' has been deleted!');
+  }
+   res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1><p>'  + 'ERROR: NO Such ID');
+
+  });
 });
