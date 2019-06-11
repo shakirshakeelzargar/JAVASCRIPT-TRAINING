@@ -14,8 +14,8 @@ var JwtStrategy = passportJWT.Strategy;
 var users = [
     {
         id: 1,
-        name: 'jonathanmh',
-        password: '%2yx4'
+        name: 'shakir',
+        password: 'shakir'
     },
     {
         id: 2,
@@ -118,6 +118,48 @@ app.get('/employee', passport.authenticate('jwt', { session: false }), function 
 
 
 
+app.post('/employee', passport.authenticate('jwt', { session: false }), function (req, res) {
+    var postData = req.body;
+    pool.query('INSERT INTO employee SET id=?,`name`=?,`salary`=?,`age`=?', [req.body.id, req.body.name, req.body.salary, req.body.age], function (error, results, fields) {
+        if (error) {
+            res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' + '<h2>ERROR: ID ALREADY EXISTS</h2>')
+        }
+        res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' + 'Record ' + [req.body.id] + ' has been Inserted!');
+
+    });
+});
+
+//rest api to update record into mysql database
+app.put('/employee', passport.authenticate('jwt', { session: false }), function (req, res) {
+    pool.query('UPDATE `employee` SET `name`=?,`salary`=?,`age`=? where `id`=?', [req.body.name, req.body.salary, req.body.age, req.body.id], function (error, results, fields) {
+
+        var x = JSON.stringify(results);
+
+        if (x === '{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":2,"warningCount":0,"message":"(Rows matched: 1  Changed: 1  Warnings: 0","protocol41":true,"changedRows":1}') {
+            res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' + 'Record ' + [req.body.id] + ' has been Updated!');
+        }
+        res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1>' + '<h2>ERROR: No Such Row</h2>')
+
+    });
+});
+
+//rest api to delete record from mysql database
+app.delete('/employee', passport.authenticate('jwt', { session: false }), function (req, res) {
+    console.log(req.body);
+    pool.query('DELETE FROM `employee` WHERE `id`=?', [req.body.id], function (error, results, fields) {
+        var x = JSON.stringify(results);
+        if (x === '{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":2,"warningCount":0,"message":"","protocol41":true,"changedRows":0}') {
+
+            res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1><p>' + 'Record ' + [req.body.id] + ' has been deleted!');
+        }
+        res.end('<h1><a href="http://northside.in/restapi/">Click Here To Go Back</a></h1><p>' + 'ERROR: NO Such ID');
+
+    });
+});
+
+
+
+
 /*
 app.get("/secretDebug",
   function(req, res, next){
@@ -126,10 +168,6 @@ app.get("/secretDebug",
   }, function(req, res){
     res.json("debugging");
 });
-
-
-
-
 */
 var server = app.listen(process.env.PORT || 3000, function () {
     console.log('Your node js server is running');
