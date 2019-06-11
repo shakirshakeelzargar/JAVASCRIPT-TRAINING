@@ -26,7 +26,7 @@ var users = [
 
 var jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = 'tasmanianDevil';
+jwtOptions.secretOrKey = 'shakirSecretKey';
 
 var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
     console.log('payload received', jwt_payload);
